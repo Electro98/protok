@@ -1,13 +1,15 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class InputOutputType(models.IntegerChoices):
     AIR = 0, 'Воздух'
     CABLE = 1, 'Кабель'
 
 
-class Transformer:
+class Transformer(models.Model):
     """Модель трансформатора"""
     class Meta:
         verbose_name = "Силовой трансформатор"
@@ -94,3 +96,50 @@ class LowVoltageDevice(models.Model):
         verbose_name='Ввод', choices=InputOutputType.choices,
         default=InputOutputType.CABLE
     )
+
+
+class Client(models.Model):
+    """Модель клиента"""
+    class Meta:
+        verbose_name = "Клиент"
+        verbose_name_plural = "Клиенты"
+
+    full_name = models.CharField(verbose_name='ФИО', max_length=254)
+    organization = models.CharField(verbose_name='Наименвоание организации', max_length=254)
+    email = models.EmailField(verbose_name='E-mail', max_length=254)
+    phone_number = PhoneNumberField(verbose_name='Номер телефона')
+
+
+class Order(models.Model):
+    """Модель заказа"""
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
+    # Состав
+    transformer = models.ForeignKey(
+        to=Transformer, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    lw_device = models.ForeignKey(
+        to=LowVoltageDevice, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    hw_device = models.ForeignKey(
+        to=HighVoltageDevice, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+
+    # Информация о клиенте
+    client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
+    comment = models.TextField(
+        verbose_name='Комментарий', max_length=1024,
+        null=True, blank=True
+    )
+    create_date = models.DateField(verbose_name='Дата', auto_now_add=True)
+    documentation = models.FileField(
+        verbose_name='Дополнительные файлы',
+        upload_to='orders/'
+    )
+
+    # TODO: добавить метод определения итоговой стоимости
