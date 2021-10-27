@@ -24,6 +24,7 @@ class ConnectionTypes(models.IntegerChoices):
 
 class Product(models.Model):
     """Модель продукта"""
+
     class Meta:
         abstract = True
 
@@ -41,6 +42,7 @@ class Product(models.Model):
 
 class Transformer(Product):
     """Модель трансформатора"""
+
     class Meta:
         verbose_name = "Силовой трансформатор"
         verbose_name_plural = "Силовые трансформаторы"
@@ -79,6 +81,7 @@ class Transformer(Product):
         verbose_name='Конструкторская документация',
         upload_to='documentation/transformers'
     )
+
     # count = models.IntegerField(verbose_name='Количество трансформаторов')
 
     def __str__(self):
@@ -87,6 +90,7 @@ class Transformer(Product):
 
 class HighVoltageDevice(Product):
     """Модель устройства высокого напряжения"""
+
     class Meta:
         verbose_name = "Устройство ВН"
         verbose_name_plural = "Устройства ВН"
@@ -135,6 +139,7 @@ class HighVoltageDevice(Product):
 
 class LowVoltageDevice(Product):
     """Модель устройства низкого напряжения"""
+
     class Meta:
         verbose_name = "Устройство НН"
         verbose_name_plural = "Устройства НН"
@@ -182,6 +187,7 @@ class LowVoltageDevice(Product):
 
 class Section(models.Model):
     """Модель секции"""
+
     class Meta:
         verbose_name = "Секция"
         verbose_name_plural = "Секции"
@@ -201,6 +207,7 @@ class Section(models.Model):
 
 class Client(models.Model):
     """Модель клиента"""
+
     class Meta:
         verbose_name = "Клиент"
         verbose_name_plural = "Клиенты"
@@ -216,6 +223,7 @@ class Client(models.Model):
 
 class Order(models.Model):
     """Модель заказа"""
+
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
