@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load calc_extras %}
 <html>
     <head>
         <meta charset="utf-8">
@@ -56,15 +57,15 @@
                       {{ field.label }}
                     </button>
                     <div class="collapse show" id="field-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-collapse">
-                      <ul class="list-group list-group-horizontal gap-4 mx-4">
-                        <li class="mx-0 d-flex gap-2">
-                          <input class="form-check-input flex-shrink-0" type="radio" name="InputRadios-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" id="InputRadios-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-1" value="">
-                          <span>Вариант1</span>
+                      <ul class="list-group {# list-group-horizontal #} gap-1 mx-4">
+                        {% if field.field|get:"_choices" %} {# hasattr(field, "choises") #}
+                        {% for choice in field.field|get:"_choices" %}
+                        <li class="mx-0 d-flex {# gap-2 #}">
+                          <input class="form-check-input flex-shrink-0" type="radio" name="InputRadios-{{ forloop.parentloop.parentloop.counter }}-{{ forloop.parentloop.counter }}" id="InputRadios-{{ forloop.parentloop.parentloop.counter }}-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" value="">
+                          <span>{{ choice.1 }}</span>
                         </li>
-                        <li class="mx-0 d-flex gap-2">
-                          <input class="form-check-input flex-shrink-0" type="radio" name="InputRadios-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" id="InputRadios-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-2" value="">
-                          <span>Вариант2</span>
-                        </li>
+                        {% endfor %}
+                        {% endif %}
                       </ul>
                     </div>
                   </li>

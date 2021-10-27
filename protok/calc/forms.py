@@ -12,4 +12,4 @@ class HighVoltageDeviceForm(ModelForm):
     class Meta:
         model = HighVoltageDevice
         fields = ['input_type', 'voltage', 'arrester', 'equipment_type',
-                  'registration', 'connection_type', 'documentation']
+                  'registration', 'connection_type']
