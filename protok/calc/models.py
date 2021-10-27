@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -10,9 +12,16 @@ class InputOutputType(models.IntegerChoices):
     CABLE = 1, 'Кабель'
 
 
-class ArresterTypes(models.IntegerChoices):
+class ArresterAvailabilityHighVoltage(models.IntegerChoices):
     """Типы разрядников"""
     VALVE = 0, 'РВО'
+    NONLINEAR = 1, 'ОПН'
+    NO = 2, 'Нет'
+
+
+class ArresterAvailabilityLowVoltage(models.IntegerChoices):
+    """Типы разрядников"""
+    VALVE = 0, 'РВН'
     NONLINEAR = 1, 'ОПН'
     NO = 2, 'Нет'
 
@@ -22,8 +31,19 @@ class ConnectionTypes(models.IntegerChoices):
     BUS = 1, 'Шина'
 
 
+class StreetIllumination(models.IntegerChoices):
+    NO = 0, 'Нет'
+    YES = 1, 'Да'
+
+
+class LineType(models.IntegerChoices):
+    POWER_25 = 25
+    POWER_31_5 = 31.5
+
+
 class Product(models.Model):
     """Модель продукта"""
+
     class Meta:
         abstract = True
 
@@ -41,6 +61,7 @@ class Product(models.Model):
 
 class Transformer(Product):
     """Модель трансформатора"""
+
     class Meta:
         verbose_name = "Силовой трансформатор"
         verbose_name_plural = "Силовые трансформаторы"
@@ -49,19 +70,16 @@ class Transformer(Product):
         """Типы трансформаторов"""
         OIL = 'ТМ', 'Масляный'
         OIL_HERMETIC = 'ТМГ', 'Масляный герметичный'
-        DRY = 'ТС', 'Сухой(3)'
-        DRY_CAST = 'ТСЛ', 'Сухой с изоляцией(3)'
+        DRY = 'Сухой'
 
     class ConnectionSchemes(models.TextChoices):
         """Схемы подключения обмоток"""
         STAR_TRIA = 'Д/У', 'Треугольник/Звезда'
         STAR_STAR = 'У/У', 'Звезда/Звезда'
-        STAR_ZIGZ = 'У/Z', 'Звезда/Зигзаг'
-        OTHER = 'Другое', 'Другое'
 
     transformer_type = models.CharField(
         verbose_name='Тип трансформатора', choices=TransformerTypes.choices,
-        default=TransformerTypes.DRY, max_length=3
+        default=TransformerTypes.DRY, max_length=5
     )
     connection_scheme = models.CharField(
         verbose_name='Схема соединения обмоток', choices=ConnectionSchemes.choices,
@@ -69,17 +87,20 @@ class Transformer(Product):
     )
     power = models.IntegerField(
         verbose_name='Мощность трансформатора',
+        validators=[MinValueValidator(20), MaxValueValidator(630)]
+    )
+    voltage = models.IntegerField(
+        verbose_name='Напряжение трансформатора',
         validators=[MinValueValidator(0)]
     )
-    # voltage = models.IntegerField(
-    #     verbose_name='Напряжение трансформатора',
-    #     validators=[MinValueValidator(0)]
-    # )
     documentation = models.FileField(
         verbose_name='Конструкторская документация',
         upload_to='documentation/transformers'
     )
-    # count = models.IntegerField(verbose_name='Количество трансформаторов')
+    count = models.IntegerField(
+        verbose_name='Количество трансформаторов',
+        validators=[MinValueValidator(1)]
+    )
 
     def __str__(self):
         return f'{self.name}'
@@ -87,19 +108,24 @@ class Transformer(Product):
 
 class HighVoltageDevice(Product):
     """Модель устройства высокого напряжения"""
+
     class Meta:
         verbose_name = "Устройство ВН"
         verbose_name_plural = "Устройства ВН"
 
     class EquipmentTypes(models.IntegerChoices):
-        INPUT_AUTOGAS = 0, 'Ввод/ВНА'
-        INPUT_INNER = 1, 'Ввод/РВЗ'
-        TRANSFORMER_AUTOGAS = 2, 'Трансформатор/ВНА'
-        TRANSFORMER_INNER = 3, 'Трансформатор/РВЗ'
-        LINE_AUTOGAS = 4, 'Линия/ВНА'
-        LINE_INNER = 5, 'Линия/РВЗ'
-        SECTION_AUTOGAS = 6, 'Секция/ВНА'
-        SECTION_INNER = 7, 'Секция/РВЗ'
+        INPUT_AUTOGAS = 0, 'ВНА'
+        INPUT_INNER = 1, 'РВЗ'
+        SWITCH_AUTOGAS = 2, 'РЛНД'
+        NO = 3, 'Нет'
+
+    class WireType(models.IntegerChoices):
+        COPPER = 0, 'Медь'
+        ALUMINIUM = 1, 'Алюминий'
+
+    class NominalVoltage(models.IntegerChoices):
+        SIX = 6,
+        TEN = 10,
 
     input_type = models.IntegerField(
         verbose_name='Ввод', choices=InputOutputType.choices,
@@ -110,8 +136,8 @@ class HighVoltageDevice(Product):
         validators=[MinValueValidator(0)]
     )
     arrester = models.IntegerField(
-        verbose_name='Тип разрядника', choices=ArresterTypes.choices,
-        default=ArresterTypes.NO
+        verbose_name='Тип разрядника', choices=ArresterAvailabilityHighVoltage.choices,
+        default=ArresterAvailabilityHighVoltage.NO
     )
     equipment_type = models.IntegerField(
         verbose_name='Тип оборудования РУНВ', choices=EquipmentTypes.choices,
@@ -135,6 +161,7 @@ class HighVoltageDevice(Product):
 
 class LowVoltageDevice(Product):
     """Модель устройства низкого напряжения"""
+
     class Meta:
         verbose_name = "Устройство НН"
         verbose_name_plural = "Устройства НН"
@@ -144,17 +171,26 @@ class LowVoltageDevice(Product):
         CIRCUIT_BREAKER = 1, 'Автоматический выключатель'
         DISCONNECTOR_CB = 2, 'Разъединитель + Автоматический выключатель'
 
+    class WireType(models.IntegerChoices):
+        COPPER = 0, 'Медь'
+        ALUMINIUM = 1, 'Алюминий'
+
+    class CommuteDevice(models.IntegerChoices):
+        MANUAL_INPUT = 0, 'Ручное включение'
+        DISCONNECTOR = 1, 'Разъединитель'
+        AUTOMATIC_SWITCHER = 2, 'Автоматический выключатель'
+
     input_type = models.IntegerField(
         verbose_name='Ввод', choices=InputOutputType.choices,
         default=InputOutputType.CABLE
     )
+    arrester = models.IntegerField(
+        verbose_name='Тип разрядника', choices=ArresterAvailabilityLowVoltage.choices,
+        default=ArresterAvailabilityLowVoltage.NO
+    )
     voltage = models.IntegerField(
         verbose_name='Номинальное напряжение на стороне НН',
         validators=[MinValueValidator(0)]
-    )
-    arrester = models.IntegerField(
-        verbose_name='Тип разрядника', choices=ArresterTypes.choices,
-        default=ArresterTypes.NO
     )
     input_device = models.IntegerField(
         verbose_name='Вводное устройство', choices=InputDeviceTypes.choices,
@@ -180,8 +216,34 @@ class LowVoltageDevice(Product):
         return f'{self.name}'
 
 
+class ComlexTransformerSubstation(Product):
+    class Meta:
+        verbose_name = "Комплексная трансформаторная подстанция"
+        verbose_name_plural = "Комплексные трансформаторные подстанции"
+
+    class ComlexTransformerSubstationType(models.TextChoices):
+        KIOSK_DEAD_END = "Киосковая тупиковая", "КТП/Т"
+        KIOSK_ENTRANCE = "Киосковая проходная", "КТП/П"
+        DEAD_END_INSULATED = "Тупиковая утепленная типа 'сэндвич'", "КТП"
+        ENTRANCE_INSULATED = "Проходная утепленная типа 'сэндвич'", "КТП"
+
+    transformer = models.ForeignKey(
+        to=Transformer, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    lw_device = models.ForeignKey(
+        to=LowVoltageDevice, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    hw_device = models.ForeignKey(
+        to=HighVoltageDevice, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+
+
 class Section(models.Model):
     """Модель секции"""
+
     class Meta:
         verbose_name = "Секция"
         verbose_name_plural = "Секции"
@@ -201,6 +263,7 @@ class Section(models.Model):
 
 class Client(models.Model):
     """Модель клиента"""
+
     class Meta:
         verbose_name = "Клиент"
         verbose_name_plural = "Клиенты"
@@ -216,11 +279,11 @@ class Client(models.Model):
 
 class Order(models.Model):
     """Модель заказа"""
+
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
 
-    # Состав
     transformer = models.ForeignKey(
         to=Transformer, on_delete=models.SET_NULL,
         null=True, blank=True

@@ -20,7 +20,7 @@ class SectionInline(admin.TabularInline):
 @admin.register(models.LowVoltageDevice)
 class AuthorLowVoltageDevice(admin.ModelAdmin):
     inlines = [SectionInline]
-    list_display = ('name', 'manufacturer', 'voltage', 'input_type', 'input_device', 'price')
+    list_display = ('name', 'manufacturer', 'voltage', 'input_type', 'input_device')
 
 
 @admin.register(models.Client)
