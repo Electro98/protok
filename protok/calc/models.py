@@ -1,3 +1,5 @@
+import enum
+
 from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -37,8 +39,8 @@ class StreetIllumination(models.IntegerChoices):
 
 
 class LineType(models.IntegerChoices):
-    POWER_25 = 25
-    POWER_31_5 = 31.5
+    POWER = 25
+    PRICE = 31.5
 
 
 class Product(models.Model):
@@ -224,20 +226,31 @@ class ComlexTransformerSubstation(Product):
     class ComlexTransformerSubstationType(models.TextChoices):
         KIOSK_DEAD_END = "Киосковая тупиковая", "КТП/Т"
         KIOSK_ENTRANCE = "Киосковая проходная", "КТП/П"
-        DEAD_END_INSULATED = "Тупиковая утепленная типа 'сэндвич'", "КТП"
-        ENTRANCE_INSULATED = "Проходная утепленная типа 'сэндвич'", "КТП"
+        DEAD_END_INSULATED = "Тупиковая утепленная типа 'сэндвич'", "КТП/TC"
+        ENTRANCE_INSULATED = "Проходная утепленная типа 'сэндвич'", "КТП/ПС"
 
-    transformer = models.ForeignKey(
-        to=Transformer, on_delete=models.SET_NULL,
-        null=True, blank=True
+    type_station = models.CharField(
+        verbose_name='Тип подстанции', choices=ComlexTransformerSubstationType.choices,
+        default=ComlexTransformerSubstationType.KIOSK_DEAD_END, max_length=124
     )
-    lw_device = models.ForeignKey(
-        to=LowVoltageDevice, on_delete=models.SET_NULL,
-        null=True, blank=True
+    documentation = models.FileField(
+        verbose_name='Дополнительные файлы',
+        upload_to='documentation/substations'
     )
-    hw_device = models.ForeignKey(
-        to=HighVoltageDevice, on_delete=models.SET_NULL,
-        null=True, blank=True
+
+
+class Fiders(Product):
+    class Meta:
+        verbose_name = "Фидер"
+        verbose_name_plural = "Фидеры"
+
+    amperage = models.FloatField(
+        verbose_name="Сила тока, A",
+        validators=[MinValueValidator(0)]
+    )
+    documentation = models.FileField(
+        verbose_name='Дополнительные файлы',
+        upload_to='documentation/fiders'
     )
 
 
@@ -248,17 +261,29 @@ class Section(models.Model):
         verbose_name = "Секция"
         verbose_name_plural = "Секции"
 
-    power = models.IntegerField(
-        verbose_name='Мощность',
-        validators=[MinValueValidator(0)]
-    )
+    # power = models.IntegerField(
+    #     verbose_name='Мощность',
+    #     validators=[MinValueValidator(0)]
+    # )
     denomination = models.IntegerField(
         verbose_name='Номинальный ток',
         validators=[MinValueValidator(0)]
     )
-    ll_device = models.ForeignKey(
+    lv_device = models.ForeignKey(
         to=LowVoltageDevice, on_delete=models.CASCADE
     )
+    fider = models.ForeignKey(
+        to=Fiders, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    count = models.IntegerField(
+        verbose_name="Количество линий",
+        validators=[MinValueValidator(0)]
+    )
+
+    @property
+    def price(self):
+        return self.count * self.fider.price
 
 
 class Client(models.Model):
@@ -288,12 +313,16 @@ class Order(models.Model):
         to=Transformer, on_delete=models.SET_NULL,
         null=True, blank=True
     )
-    lw_device = models.ForeignKey(
+    lv_device = models.ForeignKey(
         to=LowVoltageDevice, on_delete=models.SET_NULL,
         null=True, blank=True
     )
-    hw_device = models.ForeignKey(
+    hv_device = models.ForeignKey(
         to=HighVoltageDevice, on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    substation = models.ForeignKey(
+        to=ComlexTransformerSubstation, on_delete=models.SET_NULL,
         null=True, blank=True
     )
 
@@ -309,6 +338,26 @@ class Order(models.Model):
         upload_to='orders/'
     )
 
-    # TODO: добавить метод определения итоговой стоимости
-    # TODO: добавить метод получение всей конструкторской документации
-    # TODO: добавить метод генерации pdf со сводной информацией
+    @property
+    def count_price(self):
+        substation_price = self.substation.price
+        transformer_price = self.transformer.price
+        hv_device_price = self.hv_device.price
+        lv_device_price = self.lv_device.price
+        all_section = self.lv_device.section_set.all()
+        section_price = sum(item.price for item in all_section)
+        return (substation_price + transformer_price +
+                hv_device_price + lv_device_price + section_price)
+
+    def documentation_assembling(self):
+        substation_documentation = self.substation.documentation
+        transformer_documentation = self.transformer.documentation
+        hv_device_documentation = self.hv_device.documentation
+        lv_device_documentation = self.lv_device.documentation
+        all_section = self.lv_device.section_set.all()
+        section_documentation = [item.documentation for item in all_section]
+        return [substation_documentation, transformer_documentation,
+                hv_device_documentation, lv_device_documentation] + section_documentation
+
+
+
