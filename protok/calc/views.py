@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .forms import TransformerForm, HighVoltageDeviceForm, ClientForm
+from .forms import TransformerForm, HighVoltageDeviceForm, ClientForm, OrderForm
 from django.core.mail import send_mail, EmailMessage, get_connection
 from .models import Order
 
@@ -13,7 +13,8 @@ def index(request):
 
 def getcontacts(request):
     form = ClientForm()
-    return render(request, 'calc/contacts.html', {'form': form})
+    order = OrderForm()
+    return render(request, 'calc/contacts.html', {'form': form, 'order': order})
 
 
 def results(request, pk_order):
@@ -35,4 +36,3 @@ def send_email(order_id):
         )
         print(f'Почта ={order.client.email}')
         email.send()
->>>>>>> e70ea3d8bc0804b56badc7b075877dfd803f43b6

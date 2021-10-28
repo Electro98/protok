@@ -326,13 +326,13 @@ class Order(models.Model):
     # Информация о клиенте
     client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
     comment = models.TextField(
-        verbose_name='Комментарий', max_length=1024,
+        verbose_name='Дополнительные требования', max_length=1024,
         null=True, blank=True
     )
     create_date = models.DateField(verbose_name='Дата', auto_now_add=True)
     documentation = models.FileField(
         verbose_name='Дополнительные файлы',
-        upload_to='orders/'
+        upload_to='orders/',
     )
 
     @property

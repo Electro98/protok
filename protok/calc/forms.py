@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Transformer, HighVoltageDevice, Client
+from .models import Transformer, HighVoltageDevice, Client, Order
 
 
 class TransformerForm(ModelForm):
@@ -19,3 +19,9 @@ class ClientForm(ModelForm):
     class Meta:
         model = Client
         fields = ['full_name', 'organization', 'email', 'phone_number']
+
+
+class OrderForm(ModelForm):
+    class Meta:
+        model = Order
+        fields = ['comment', 'documentation']
