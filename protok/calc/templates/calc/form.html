@@ -37,13 +37,13 @@
 <body style="background: #dbdbdb;">
 <div class="container">
 <div class="row g-5 gap-2">
-    <div class="col-md-3 p-2 bg-white" style="width: 320px;">
+    <div class="col-md-3 p-2 bg-white rounded" style="width: 320px;">
         {# <form action="{# Куда пошлём? }">  #}
         {% csrf_token %}
         <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
             <span class="fs-5 fw-semibold mx-auto">Характеристики КТП</span>
         </div>
-        <ul class="list-unstyled ps-0 mx-1">
+        <ul class="list-unstyled list-group ps-0 mx-1">
           {% for form in forms %}
           <li class="mb-1 gap-2">
             <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#form-{{ forloop.counter }}-collapse" aria-expanded="true">
