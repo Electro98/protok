@@ -1,6 +1,3 @@
-import enum
-
-from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
@@ -294,7 +291,7 @@ class Client(models.Model):
         verbose_name_plural = "Клиенты"
 
     full_name = models.CharField(verbose_name='ФИО', max_length=254)
-    organization = models.CharField(verbose_name='Наименвоание организации', max_length=254)
+    organization = models.CharField(verbose_name='Наименование организации', max_length=254)
     email = models.EmailField(verbose_name='E-mail', max_length=254)
     phone_number = PhoneNumberField(verbose_name='Номер телефона')
 
@@ -355,9 +352,6 @@ class Order(models.Model):
         hv_device_documentation = self.hv_device.documentation
         lv_device_documentation = self.lv_device.documentation
         all_section = self.lv_device.section_set.all()
-        section_documentation = [item.documentation for item in all_section]
+        section_documentation = [item.fider.documentation for item in all_section]
         return [substation_documentation, transformer_documentation,
                 hv_device_documentation, lv_device_documentation] + section_documentation
-
-
-
