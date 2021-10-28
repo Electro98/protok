@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .forms import TransformerForm, HighVoltageDeviceForm, ClientForm, OrderForm
 from django.core.mail import send_mail, EmailMessage, get_connection
 from .models import Order
@@ -11,7 +11,11 @@ def index(request):
     return render(request, 'calc/form.html', {'forms': forms})
 
 
-def getcontacts(request):
+def get_contact(request):
+    return redirect(f'result/{None}/', permanent=True)
+
+
+def contacts(request):
     form = ClientForm()
     order = OrderForm()
     return render(request, 'calc/contacts.html', {'form': form, 'order': order})
