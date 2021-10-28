@@ -1,6 +1,3 @@
-import enum
-
-from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
@@ -355,9 +352,6 @@ class Order(models.Model):
         hv_device_documentation = self.hv_device.documentation
         lv_device_documentation = self.lv_device.documentation
         all_section = self.lv_device.section_set.all()
-        section_documentation = [item.documentation for item in all_section]
+        section_documentation = [item.fider.documentation for item in all_section]
         return [substation_documentation, transformer_documentation,
                 hv_device_documentation, lv_device_documentation] + section_documentation
-
-
-

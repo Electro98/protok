@@ -134,3 +134,14 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DEFAULT_FROM_EMAIL = 'a4dmindjango@yandex.ru'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_HOST_USER = 'a4dmindjango@yandex.ru'
+EMAIL_HOST_PASSWORD = 'gnpiyijshtcdufzo'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_USE_SSL = True
+
