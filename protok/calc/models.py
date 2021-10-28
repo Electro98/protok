@@ -291,7 +291,7 @@ class Client(models.Model):
         verbose_name_plural = "Клиенты"
 
     full_name = models.CharField(verbose_name='ФИО', max_length=254)
-    organization = models.CharField(verbose_name='Наименвоание организации', max_length=254)
+    organization = models.CharField(verbose_name='Наименование организации', max_length=254)
     email = models.EmailField(verbose_name='E-mail', max_length=254)
     phone_number = PhoneNumberField(verbose_name='Номер телефона')
 

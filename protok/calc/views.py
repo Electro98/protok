@@ -1,8 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .forms import TransformerForm, HighVoltageDeviceForm
 from django.core.mail import send_mail, EmailMessage, get_connection
 from .models import Order
-
 
 
 def index(request):
@@ -12,11 +11,16 @@ def index(request):
     return render(request, 'calc/form.html', {'forms': forms})
 
 
+def results(request, pk_order):
+    order = get_object_or_404(Order, pk=pk_order)
+    return render(request, 'calc/results.html', {'order': order, 'client': order.client})
+
+
 def send_email(order_id):
     order = Order.objects.get(pk=order_id)
     # email.attach([order.path for order in order.documentation_assembling()])
     with get_connection() as connection:
-        email = EmailMessage(#C8.fnjAnL7iAACw
+        email = EmailMessage(  # C8.fnjAnL7iAACw
             'Hello',
             'From your mom gay',
             "a4dmindjango@yandex.ru",
