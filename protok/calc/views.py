@@ -4,11 +4,15 @@ from django.core.mail import send_mail, EmailMessage, get_connection
 from .models import Order
 
 
+def setname(obj, name):
+    obj.name = name
+    return obj
+
 def index(request):
     forms = []
-    forms.append(TransformerForm())
-    forms.append(HighVoltageDeviceForm())
-    return render(request, 'calc/form.html', {'forms': forms})
+    forms.append(setname(TransformerForm(), 'Трансформатор'))
+    forms.append(setname(HighVoltageDeviceForm(), 'ВН'))
+    return render(request, 'calc/form.html', {'forms': forms, 'display_element': forms})
 
 
 def get_contact(request):
