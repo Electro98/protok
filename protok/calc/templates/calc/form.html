@@ -40,10 +40,10 @@
     </style>
     <!-- <link rel="stylesheet" href="{% static 'calc/somestylesheet.css' %}"> -->
 </head>
-<body style="background: #dbdbdb;">
+<body style="background: url({% static 'calc/fon_site.png' %}); background-size: cover; background-position: center;">
 <div class="container">
     <div class="row g-5 gap-2">
-        <div class="col-md-3 p-2 " style="width: 320px;background-color: rgba(196, 196, 196, 0.75);">
+        <div class="col-md-3 p-2 " style="width: 320px;background-color: rgba(196, 196, 196, 0.75);border-radius: 31px">
             {# <form action="{# Куда пошлём? }">  #}
             {% csrf_token %}
             <div class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
@@ -91,7 +91,7 @@
             </ul>
             {# </form> #}
         </div>
-        <div class="col-md-8" style="background-color: rgba(196, 196, 196, 0.75);">
+        <div class="col-md-8" style="background-color: rgba(196, 196, 196, 0.75);border-radius: 31px">
             <!-- Главный блок -->
             <div class="d-flex py-2 pb-3 mb-3 link-dark text-decoration-none border-bottom" style="position: relative;">
                 <span class="fs-5 fw-semibold mx-auto">Комплектация КТП</span>
