@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import TransformerForm, HighVoltageDeviceForm, ClientForm, OrderForm
 from django.core.mail import send_mail, EmailMessage, get_connection
+from django.views.decorators.csrf import csrf_protect
 from .models import Order
 
 
@@ -18,14 +19,29 @@ def index(request):
     return render(request, 'calc/form.html', {'forms': forms, 'display_element': forms})
 
 
+@csrf_protect
 def get_contact(request):
-    return redirect(f'result/{None}/', permanent=True)
+    if request.method == 'POST':
+        client = ClientForm(request.POST)
+        order = OrderForm(request.POST, request.FILES)
+        print(request.__dict__)
+        if client.is_valid():
+            print('Ohh')
+        else:
+            print(client.errors.as_data())
+        if order.is_valid():
+            print('Fuck')
+        else:
+            print(order.errors.as_data())
+        if not client.is_valid() or not order.is_valid():
+            return render(request, 'calc/contacts.html', {'client': client, 'order': order})
+    return redirect(f'/result/{None}/', permanent=True)
 
 
 def contacts(request):
-    form = ClientForm()
+    client = ClientForm()
     order = OrderForm()
-    return render(request, 'calc/contacts.html', {'form': form, 'order': order})
+    return render(request, 'calc/contacts.html', {'client': client, 'order': order})
 
 
 def results(request, pk_order):

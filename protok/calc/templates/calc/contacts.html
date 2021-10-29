@@ -23,11 +23,12 @@
 <div class="container",>
 <div class="g-5 col-md-10 mx-auto", style="background: #E6E6E6; background-color: rgba(196, 196, 196, 0.75); border-radius: 31px">
     <h1 class="fs-18 fw-semibold rounded col-md-4 text-center mx-auto">Отправка заказа</h1>
-    <form class="g-5" method="POST">
+    <form class="g-5" method="POST" action="/get_contact/" enctype="multipart/form-data"> {% csrf_token %}
     <ul class="list-unstyled col-md-8 mx-auto gap-4">
-        {% for field in form%}
+        {% for field in client %}
             <li class="mb-1 p-1", style="background: #80C0E7; border-radius: 31px">
             <span class="mx-3" style="color: #000000; font-weight: bold;">{{ field.label }}:</span>
+            {{ field.errors }}
                 <center> 
                 {{ field }}
                 </center>
@@ -36,6 +37,7 @@
         {% for field in order%}
             <li class="p-1 pb-2 mb-1", style="background: #80C0E7; border-radius: 31px">
             <span class="mx-3"style="color: #000000; font-weight: bold;">{{ field.label }}:</span>
+            {{ field.errors }}
                 <center> 
                 {{ field }}
                 </center>
