@@ -6,31 +6,43 @@
     <title>Pro*Tok</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <style type="text/css">
+        input {
+            width:  500px;
+            height: 30px;
+            border-radius: 31px;
+        }
+        textarea {
+            width:  500px;
+            border-radius: 31px;
+        }
+
+    </style>
 </head>
 <body style="background: white;">
 <div class="container", style="background: white">
-<div class="g-5 col-md-10 mx-auto", style="background: #E6E6E6">
+<div class="g-5 col-md-10 mx-auto", style="background: #E6E6E6; background-color: rgba(196, 196, 196, 0.75);">
     <h1 class="fs-18 fw-semibold rounded col-md-4 text-center mx-auto">Отправка заказа</h1>
     <form class="g-5" method="POST">
     <ul class="list-unstyled col-md-8 mx-auto gap-4">
         {% for field in form%}
-            <li class="mb-1 rounded", style="background: #80C0E7">
-            <span style="color: #000000; font-weight: bold;">{{ field.label }}:</span> 
+            <li class="mb-1 p-1", style="background: #80C0E7; border-radius: 31px">
+            <span class="mx-3" style="color: #000000; font-weight: bold;">{{ field.label }}:</span>
                 <center> 
                 {{ field }}
                 </center>
             </li>
         {% endfor %}
         {% for field in order%}
-            <li class="mb-1 rounded", style="background: #80C0E7">
-            <span style="color: #000000; font-weight: bold;">{{ field.label }}:</span>
+            <li class="p-1 pb-2 mb-1", style="background: #80C0E7; border-radius: 31px">
+            <span class="mx-3"style="color: #000000; font-weight: bold;">{{ field.label }}:</span>
                 <center> 
                 {{ field }}
                 </center>
             </li>
         {% endfor %}
     </ul>
-    <button type="submit" class="btn btn-primary col-md-2 mx-auto d-flex rounded">Отправить заказ</button>
+    <button type="submit" class="btn btn-primary col-md-2 mx-auto d-flex text-center" style="border-radius: 31px">Отправить заказ</button>
     </form>
 </div>
 </div>
