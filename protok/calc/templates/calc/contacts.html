@@ -19,9 +19,9 @@
 
     </style>
 </head>
-<body style="background: white;">
-<div class="container", style="background: white">
-<div class="g-5 col-md-10 mx-auto", style="background: #E6E6E6; background-color: rgba(196, 196, 196, 0.75);">
+<body style="background: url({% static 'calc/fon_site.png' %}); background-size: cover; background-position: center;">
+<div class="container",>
+<div class="g-5 col-md-10 mx-auto", style="background: #E6E6E6; background-color: rgba(196, 196, 196, 0.75); border-radius: 31px">
     <h1 class="fs-18 fw-semibold rounded col-md-4 text-center mx-auto">Отправка заказа</h1>
     <form class="g-5" method="POST">
     <ul class="list-unstyled col-md-8 mx-auto gap-4">
@@ -42,7 +42,9 @@
             </li>
         {% endfor %}
     </ul>
-    <button type="submit" class="btn btn-primary col-md-2 mx-auto d-flex text-center" style="border-radius: 31px">Отправить заказ</button>
+    <button type="submit" class="btn btn-primary col-md-2 mx-auto d-flex text-center" style="border-radius: 31px">
+        <span class="fs-5 fw-semibold mx-auto">Оформить заказ</span>
+    </button>
     </form>
 </div>
 </div>
