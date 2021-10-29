@@ -11,7 +11,10 @@ def setname(obj, name):
 def index(request):
     forms = []
     forms.append(setname(TransformerForm(), 'Трансформатор'))
+    forms[0].fields['power'].min_value = 20
+    forms[0].fields['power'].max_value = 630
     forms.append(setname(HighVoltageDeviceForm(), 'ВН'))
+    forms[1].fields['voltage'].max_value = 10000
     return render(request, 'calc/form.html', {'forms': forms, 'display_element': forms})
 
 
